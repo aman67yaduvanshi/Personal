@@ -1,0 +1,126 @@
+<div id="share-sidebar">
+
+  <button class="sb-btn" id="btn-share" title="Share this page" onclick="sbShare()">
+    <span class="sb-icon" style="background:#25d366;">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff">
+        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11A2.99 2.99 0 0 0 18 8a3 3 0 1 0-3-3c0 .24.04.47.09.7L8.04 9.81A3 3 0 0 0 6 9a3 3 0 1 0 0 6c.78 0 1.49-.3 2.04-.78l7.05 4.14c-.05.22-.09.44-.09.67a3 3 0 1 0 3-3z"/>
+      </svg>
+    </span>
+    <span class="sb-label" style="color:#fff;">Share Page</span>
+  </button>
+
+  <button class="sb-btn" id="btn-browser" title="Open in Chrome" onclick="sbOpenBrowser()">
+    <span class="sb-icon" style="background:#fff;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/960px-Google_Chrome_icon_%28February_2022%29.svg.png" width="28" height="28" alt="Chrome"/>
+    </span>
+    <span class="sb-label" style="color:#1a73e8;">Open in Chrome</span>
+  </button>
+
+</div>
+
+<div id="sb-toast"></div>
+
+<style>
+#share-sidebar {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sb-btn {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  width: 48px;
+  overflow: hidden;
+  transition: width 0.35s cubic-bezier(.4,0,.2,1);
+  border-radius: 12px 0 0 12px;
+  box-shadow: -3px 3px 14px rgba(0,0,0,.2);
+  text-decoration: none;
+}
+.sb-btn:hover { width: 155px; }
+.sb-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px 0 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#btn-share  { background: #25d366; }
+#btn-browser { background: #fff; }
+.sb-label {
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 0 12px 0 6px;
+  opacity: 0;
+  transition: opacity 0.2s ease 0.1s;
+  font-family: sans-serif;
+}
+.sb-btn:hover .sb-label { opacity: 1; }
+.sb-btn:active { transform: scale(0.93); }
+#sb-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #222;
+  color: #fff;
+  padding: 10px 22px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-family: sans-serif;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s, transform .3s;
+  z-index: 100000;
+}
+#sb-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+</style>
+
+<script>
+function sbShare() {
+  var url = window.location.href;
+  var title = document.title;
+  if (navigator.share) {
+    navigator.share({ title: title, url: url }).catch(function(e) {
+      if (e.name !== 'AbortError') sbCopy(url);
+    });
+  } else { sbCopy(url); }
+}
+function sbCopy(url) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(function() { sbToast('🔗 Link copied!'); });
+  } else {
+    var t = document.createElement('textarea');
+    t.value = url; document.body.appendChild(t); t.select();
+    document.execCommand('copy'); document.body.removeChild(t);
+    sbToast('🔗 Link copied!');
+  }
+}
+function sbOpenBrowser() {
+  var url = window.location.href;
+  var intent = 'intent://' + url.replace(/^https?:\/\//, '') +
+    '#Intent;action=android.intent.action.VIEW;scheme=' +
+    (url.startsWith('https') ? 'https' : 'http') + ';end';
+  window.location.href = intent;
+  setTimeout(function() { window.open(url, '_blank'); }, 600);
+}
+function sbToast(msg) {
+  var t = document.getElementById('sb-toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2800);
+}
+</script>
