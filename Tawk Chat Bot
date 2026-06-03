@@ -1,0 +1,19 @@
+ <script type='text/javascript'>
+var Tawk_API = Tawk_API || {};
+
+Tawk_API.customStyle = {
+  visibility: {
+    desktop: {
+      position: &#39;br&#39;,
+      xOffset: 20,
+      yOffset: 100
+    },
+    mobile: {
+      position: &#39;br&#39;,
+      xOffset: 20,
+      yOffset: 120
+    }
+  }
+};
+</script>
+  
